@@ -19,6 +19,7 @@ import com.google.common.base.Function;
 
 import fr.javafreelance.fluentlenium.core.FluentPage;
 import fr.javafreelance.fluentlenium.core.domain.FluentWebElement;
+import fr.javafreelance.fluentlenium.core.search.Search;
 
 public class AccountFlowPage extends FluentPage {
     private static final int TIMEOUT_IN_SECONDS = 1;
@@ -131,7 +132,7 @@ public class AccountFlowPage extends FluentPage {
         @Override
         public synchronized Boolean apply(@Nullable WebDriver webDriver) {
             sleepOneSecond();
-            return !oldPaginator.equalsIgnoreCase(paginatorCurrent().getText());
+            return !oldPaginator.equalsIgnoreCase(new Search(getDriver()).findFirst("span.ui-paginator-current").getText());
         }
     }
 }
