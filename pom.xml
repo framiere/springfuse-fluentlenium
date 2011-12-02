@@ -365,48 +365,48 @@
 			<id>integration-test</id>
 			<build>
 				<defaultGoal>integration-test</defaultGoal>
-                <plugins>
-                    <plugin>
-                        <!-- http://mojo.codehaus.org/sql-maven-plugin/ -->
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>sql-maven-plugin</artifactId>
-                        <version>1.4</version>
-                        <configuration>
-                            <driver>${jdbc.driver}</driver>
-                            <url>${jdbc.url}-INTEGRATION</url>
-                            <username>${jdbc.user}</username>
-                            <password>${jdbc.password}</password>
-                            <autocommit>true</autocommit>
-                            <encoding>UTF-8</encoding>
-                            <print>true</print>
-                            <printResultSet>true</printResultSet>
-                            <onError>continue</onError>
-                            <delimiter>${sql-maven-plugin.delimiter}</delimiter>
-                            <orderFile>ascending</orderFile>
-                            <fileset>
-                                <basedir>${basedir}</basedir>
-                                <includes>
-                                    <include>src/main/sql/${jdbc.type}/*.sql</include>
-                                </includes>
-                            </fileset>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>Create and initialize the database</id>
-                                <phase>initialize</phase>
-                                <goals>
-                                    <goal>execute</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <dependencies>
-                            <dependency>
-                                <groupId>${jdbc.groupId}</groupId>
-                                <artifactId>${jdbc.artifactId}</artifactId>
-                                <version>${jdbc.version}</version>
-                            </dependency>
-                        </dependencies>
-                    </plugin>
+				<plugins>
+					<plugin>
+						<!-- http://mojo.codehaus.org/sql-maven-plugin/ -->
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>sql-maven-plugin</artifactId>
+						<version>1.4</version>
+						<configuration>
+							<driver>${jdbc.driver}</driver>
+							<url>${jdbc.url}-INTEGRATION</url>
+							<username>${jdbc.user}</username>
+							<password>${jdbc.password}</password>
+							<autocommit>true</autocommit>
+							<encoding>UTF-8</encoding>
+							<print>true</print>
+							<printResultSet>true</printResultSet>
+							<onError>continue</onError>
+							<delimiter>${sql-maven-plugin.delimiter}</delimiter>
+							<orderFile>ascending</orderFile>
+							<fileset>
+								<basedir>${basedir}</basedir>
+								<includes>
+									<include>src/main/sql/${jdbc.type}/*.sql</include>
+								</includes>
+							</fileset>
+						</configuration>
+						<executions>
+							<execution>
+								<id>Create and initialize the database</id>
+								<phase>initialize</phase>
+								<goals>
+									<goal>execute</goal>
+								</goals>
+							</execution>
+						</executions>
+						<dependencies>
+							<dependency>
+								<groupId>${jdbc.groupId}</groupId>
+								<artifactId>${jdbc.artifactId}</artifactId>
+								<version>${jdbc.version}</version>
+							</dependency>
+						</dependencies>
+					</plugin>
 					<plugin>
 						<artifactId>maven-failsafe-plugin</artifactId>
 						<version>2.6</version>
@@ -808,7 +808,11 @@
 			<version>0.5.2</version>
 			<scope>test</scope>
 		</dependency>
-
+		<dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>selenium-java</artifactId>
+			<version>2.14.0</version>
+		</dependency>
 	</dependencies>
 	<!-- ~~~~~~~~~~~~ -->
 	<!-- REPOSITORIES -->

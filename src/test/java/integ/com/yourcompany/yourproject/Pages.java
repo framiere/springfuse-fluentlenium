@@ -1,5 +1,8 @@
 package integ.com.yourcompany.yourproject;
 
+import static integ.com.yourcompany.yourproject.AccountSearchPageFactoryTest.clear;
+import static integ.com.yourcompany.yourproject.AccountSearchPageFactoryTest.click;
+import static integ.com.yourcompany.yourproject.AccountSearchPageFactoryTest.write;
 import static org.openqa.selenium.By.cssSelector;
 
 import org.openqa.selenium.WebDriver;
@@ -16,11 +19,9 @@ public class Pages {
         WebElement submit;
 
         public void login(String _user, String _password) {
-            user.clear();
-            user.sendKeys(_user);
-            password.clear();
-            password.sendKeys(_password);
-            submit.click();
+            write(user, _user);
+            write(password, _password);
+            click(submit);
         }
     }
 
@@ -69,21 +70,34 @@ public class Pages {
         }
 
         public void searchByUsername(String _username) {
-            email.clear();
-            password.clear();
-            username.sendKeys(_username);
-            searchButton.click();
+            clear(email, password, username);
+            write(username, _username);
+            click(searchButton);
         }
 
         public void clickAccount(String userName) {
-            driver.findElement(cssSelector("button[title=\"Edit " + userName + "\"]")).click();
+            click(driver.findElement(cssSelector("button[title=\"Edit " + userName + "\"]")));
         }
 
         public void searchByEmail(String _email) {
-            email.clear();
-            password.clear();
-            email.sendKeys(_email);
-            searchButton.click();
+            clear(password, username);
+            write(email, _email);
+            click(searchButton);
+        }
+    }
+
+    public static class DocumentSearchPage {
+        // search box
+        @FindBy(id = "form:search")
+        WebElement searchButton;
+
+        @FindBy(id = "form:sendNew")
+        WebElement createNew;
+
+        WebDriver driver;
+
+        public DocumentSearchPage(WebDriver driver) {
+            this.driver = driver;
         }
     }
 
@@ -101,13 +115,12 @@ public class Pages {
         }
 
         public void searchByRolename(String _roleName) {
-            roleName.clear();
-            roleName.sendKeys(_roleName);
-            searchButton.click();
+            write(roleName, _roleName);
+            click(searchButton);
         }
 
         public void selectRole(String roleName) {
-            driver.findElement(cssSelector("button[title=\"Select " + roleName + "\"]")).click();
+            click(driver.findElement(cssSelector("button[title=\"Select " + roleName + "\"]")));
         }
     }
 
@@ -136,19 +149,28 @@ public class Pages {
         WebElement tabRoles;
 
         public void update(String _username, String _password, String _email) {
-            username.clear();
-            username.sendKeys(_username);
-            password.clear();
-            password.sendKeys(_password);
-            email.clear();
-            email.sendKeys(_email);
+            write(username, _username);
+            write(password, _password);
+            write(email, _email);
         }
+    }
+    
+    public static class DocumentEditPage {
+        // edit box
+        @FindBy(id = "form:documentBinary_input")
+        WebElement input;
+        @FindBy(css = "div[id=\"form:documentBinary\"] span.ui-button-text")
+        WebElement choose;
+
+        // buttons
+        @FindBy(id = "form:save")
+        WebElement save;
     }
 
     public static class AccountRoleTab {
         @FindBy(css = "button[title=\"Search role\"]")
         WebElement select;
-        
+
         WebDriver driver;
 
         public AccountRoleTab(WebDriver driver) {
@@ -156,8 +178,7 @@ public class Pages {
         }
 
         public void deleteRole(String roleName) {
-            driver.findElement(cssSelector("button[title=\"Delete " + roleName + "\"]")).click();
+            click(driver.findElement(cssSelector("button[title=\"Delete " + roleName + "\"]")));
         }
     }
-
 }
