@@ -1,7 +1,7 @@
 package integ.com.yourcompany.yourproject.pages.role;
 
-import static integ.com.yourcompany.yourproject.support.Interactions.click;
 import static org.openqa.selenium.By.cssSelector;
+import integ.com.yourcompany.yourproject.support.Client;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -11,13 +11,13 @@ public class AccountRoleTab {
     @FindBy(css = "button[title=\"Search role\"]")
     public WebElement selectButton;
 
-    WebDriver driver;
+    Client client;
 
     public AccountRoleTab(WebDriver driver) {
-        this.driver = driver;
+        client = new Client(driver);
     }
 
     public void clickDeleteRole(String roleName) {
-        click(driver.findElement(cssSelector("button[title=\"Delete " + roleName + "\"]")));
+        client.click(cssSelector("button[title=\"Delete " + roleName + "\"]"));
     }
 }

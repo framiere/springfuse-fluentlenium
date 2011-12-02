@@ -1,7 +1,8 @@
 package integ.com.yourcompany.yourproject.pages.account;
 
-import static integ.com.yourcompany.yourproject.support.Interactions.write;
+import integ.com.yourcompany.yourproject.support.Client;
 
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
@@ -33,9 +34,16 @@ public class AccountEditPage {
     @FindBy(linkText = "Documents")
     public WebElement documentsTab;
 
+
+    Client client;
+
+    public AccountEditPage(WebDriver driver) {
+        client = new Client(driver);
+    }
+
     public void update(String _username, String _password, String _email) {
-        write(username, _username);
-        write(password, _password);
-        write(email, _email);
+        client.write(username, _username);
+        client.write(password, _password);
+        client.write(email, _email);
     }
 }

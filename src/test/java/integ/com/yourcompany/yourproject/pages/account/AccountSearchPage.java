@@ -1,9 +1,7 @@
 package integ.com.yourcompany.yourproject.pages.account;
 
-import static integ.com.yourcompany.yourproject.support.Interactions.clear;
-import static integ.com.yourcompany.yourproject.support.Interactions.click;
-import static integ.com.yourcompany.yourproject.support.Interactions.write;
 import static org.openqa.selenium.By.cssSelector;
+import integ.com.yourcompany.yourproject.support.Client;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -32,25 +30,25 @@ public class AccountSearchPage {
     @FindBy(css = "span.ui-icon-seek-prev")
     public WebElement paginatorPrevButton;
 
-    WebDriver driver;
+    Client client;
 
     public AccountSearchPage(WebDriver driver) {
-        this.driver = driver;
+        client = new Client(driver);
     }
 
     public void searchByUsername(String _username) {
-        clear(email, password, username);
-        write(username, _username);
-        click(searchButton);
+        client.clear(email, password, username);
+        client.write(username, _username);
+        client.click(searchButton);
     }
 
     public void clickEditAccount(String userName) {
-        click(driver.findElement(cssSelector("button[title=\"Edit " + userName + "\"]")));
+        client.click(cssSelector("button[title=\"Edit " + userName + "\"]"));
     }
 
     public void searchByEmail(String _email) {
-        clear(password, username);
-        write(email, _email);
-        click(searchButton);
+        client.clear(password, username);
+        client.write(email, _email);
+        client.click(searchButton);
     }
 }

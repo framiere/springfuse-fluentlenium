@@ -1,7 +1,6 @@
 package integ.com.yourcompany.yourproject.pages.document;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static integ.com.yourcompany.yourproject.support.Sleeps.sleep;
 
 import java.io.File;
 
@@ -24,6 +23,5 @@ public class DocumentEditPage {
 
     public void send(File file) {
         input.sendKeys(file.getAbsolutePath());
-        sleep();
     }
 }

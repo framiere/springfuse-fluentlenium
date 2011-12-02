@@ -1,6 +1,5 @@
 package integ.com.yourcompany.yourproject;
 
-import static integ.com.yourcompany.yourproject.support.Interactions.click;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.openqa.selenium.support.PageFactory.initElements;
 import integ.com.yourcompany.yourproject.pages.AnonymousHomePage;
@@ -13,7 +12,7 @@ import integ.com.yourcompany.yourproject.pages.document.DocumentSearchPage;
 import integ.com.yourcompany.yourproject.pages.document.DocumentTab;
 import integ.com.yourcompany.yourproject.pages.role.AccountRoleTab;
 import integ.com.yourcompany.yourproject.pages.role.RoleSearchPage;
-import integ.com.yourcompany.yourproject.support.Waiter;
+import integ.com.yourcompany.yourproject.support.Client;
 
 import java.util.concurrent.TimeUnit;
 
@@ -39,7 +38,7 @@ public class ComplexScenarioTest {
     AccountRoleTab accountRoleTab;
     RoleSearchPage roleSearchPage;
 
-    Waiter wait;
+    Client client;
 
     @Before
     public void setup() {
@@ -47,7 +46,7 @@ public class ComplexScenarioTest {
         // driver = new org.openqa.selenium.htmlunit.HtmlUnitDriver(true);
         driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 
-        wait = new Waiter(driver);
+        client = new Client(driver);
         loginPage = initElements(driver, LoginPage.class);
         anonymousHomePage = initElements(driver, AnonymousHomePage.class);
         loggedHomePage = initElements(driver, LoggedHomePage.class);
@@ -73,95 +72,97 @@ public class ComplexScenarioTest {
     @Ignore
     public void upload_file() throws InterruptedException {
         driver.get("http://localhost:8080/ippevent/app/home?locale=en");
-        click(anonymousHomePage.connexionLink);
+        client.click(anonymousHomePage.connexionLink);
         loginPage.login("admin", "admin");
         driver.get("http://localhost:8080/ippevent/app/document");
-        click(documentSearchPage.createNew);
+        client.click(documentSearchPage.createNew);
         documentEditPage.input.sendKeys("/Users/florent/Downloads/pom.xml");
-        wait.text("Invalid file type");
+        client.text("Invalid file type");
         documentEditPage.input.sendKeys("/Users/florent/Downloads/input.txt");
-        click(documentEditPage.save);
+        client.click(documentEditPage.save);
     }
 
     @Test
     public void as_an_admin_I_update_a_user() throws InterruptedException {
         driver.get("http://localhost:8080/ippevent/app/home?locale=en");
         String userName = "user19";
-        // login as cnorris, and verify it is not valid
-        click(anonymousHomePage.connexionLink);
-        loginPage.login("cnorris", "kickass");
-        wait.text("Invalid login or password");
 
-        // login as admin
+        client.step("login as cnorris, and verify it is not valid");
+        client.click(anonymousHomePage.connexionLink);
+        loginPage.login("cnorris", "kickass");
+        client.text("Invalid login or password");
+
+        client.step("login as admin");
         loginPage.login("admin", "admin");
-        click(loggedHomePage.accountLink);
+        client.click(loggedHomePage.accountLink);
         assertThat(accountSearchPage.searchResultsRegion.getText()).isEmpty();
 
-        // search by mail and verify ajax, next/previous navigation
+        client.step("search by mail and verify ajax, next/previous navigation");
         accountSearchPage.searchByEmail("1");
-        wait.difference(accountSearchPage.searchResultsRegion, "");
-        wait.text(accountSearchPage.paginatorText, "1 / 2");
+        client.difference(accountSearchPage.searchResultsRegion, "");
+        client.text(accountSearchPage.paginatorText, "1 / 2");
         assertThat(accountSearchPage.searchResultsRegion.getText()).isEqualTo("13 results");
-        click(accountSearchPage.paginatorNextButton);
-        wait.text(accountSearchPage.paginatorText, "2 / 2");
-        click(accountSearchPage.paginatorPrevButton);
-        wait.text(accountSearchPage.paginatorText, "1 / 2");
+        client.click(accountSearchPage.paginatorNextButton);
+        client.text(accountSearchPage.paginatorText, "2 / 2");
+        client.click(accountSearchPage.paginatorPrevButton);
+        client.text(accountSearchPage.paginatorText, "1 / 2");
 
-        // search by username, select the user, and update its value
+        client.step("search by username, select the user, and update its value");
         accountSearchPage.searchByUsername(userName);
-        wait.text(userName + "@example.com");
+        client.text(userName + "@example.com");
         accountSearchPage.clickEditAccount(userName);
-        wait.text("Username (required)");
+        client.text("Username (required)");
         accountEditPage.update("cnorris", "kickass", "gmail@chucknorris.com");
-        click(accountEditPage.submit);
-        wait.text("Submitted data received, validated and binded, but not saved in database");
+        client.click(accountEditPage.submit);
+        client.text("Submitted data received, validated and binded, but not saved in database");
 
-        // add a ROLE_ADMIN to the selected user
-        click(accountEditPage.rolesTab);
-        click(accountRoleTab.selectButton);
+        client.step("add a ROLE_ADMIN to the selected user");
+        client.click(accountEditPage.rolesTab);
+        client.click(accountRoleTab.selectButton);
         roleSearchPage.searchByRolename("ADMIN");
         roleSearchPage.clickSelectRole("ROLE_ADMIN");
-        wait.text("Roles: Selected existing and added it, but not saved in database");
+        client.text("Roles: Selected existing and added it, but not saved in database");
 
-        // add document
-        click(accountEditPage.documentsTab);
-        click(documentTab.addButton);
+        client.step("add document");
+        client.click(accountEditPage.documentsTab);
+        client.click(documentTab.addButton);
         documentEditPage.send("README");
-        wait.text("Invalid file type.");
+        client.warning("Error is expected");
+        client.text("Invalid file type.");
         documentEditPage.send("src/test/resources/for_upload.txt");
-        click(documentTab.submit);
+        client.click(documentTab.submit);
 
-        // save to database
-        click(accountEditPage.save);
-        wait.text("Saved OK in database");
+        client.step("save to database");
+        client.click(accountEditPage.save);
+        client.text("Saved OK in database");
 
-        // then logout
-        click(loggedHomePage.logoutLink);
+        client.step("logout");
+        client.click(loggedHomePage.logoutLink);
 
-        // let's try to log as cnorris as set previously
-        click(anonymousHomePage.connexionLink);
+        client.step("let's try to log as cnorris as set previously");
+        client.click(anonymousHomePage.connexionLink);
         loginPage.login("cnorris", "kickass");
-        click(loggedHomePage.accountLink);
-        click(loggedHomePage.logoutLink);
+        client.click(loggedHomePage.accountLink);
+        client.click(loggedHomePage.logoutLink);
 
-        // now log back as admin and search for chuck norris
-        click(anonymousHomePage.connexionLink);
+        client.step("now log back as admin and search for chuck norris");
+        client.click(anonymousHomePage.connexionLink);
         loginPage.login("admin", "admin");
-        click(loggedHomePage.accountLink);
+        client.click(loggedHomePage.accountLink);
         accountSearchPage.searchByUsername("cnorris");
-        wait.text("gmail@chucknorris.com");
+        client.text("gmail@chucknorris.com");
 
-        // select account and revert previous changes
+        client.step("select account and revert previous changes");
         accountSearchPage.clickEditAccount("cnorris");
-        wait.text("Username (required)");
+        client.text("Username (required)");
         accountEditPage.update(userName, userName, userName + "@example.com");
-        click(accountEditPage.booksTab);
-        click(accountEditPage.documentsTab);
-        click(accountEditPage.rolesTab);
+        client.click(accountEditPage.booksTab);
+        client.click(accountEditPage.documentsTab);
+        client.click(accountEditPage.rolesTab);
         accountRoleTab.clickDeleteRole("ROLE_ADMIN");
-        click(accountEditPage.save);
+        client.click(accountEditPage.save);
 
-        wait.text("Saved OK in database");
+        client.text("Saved OK in database");
     }
 
 }
