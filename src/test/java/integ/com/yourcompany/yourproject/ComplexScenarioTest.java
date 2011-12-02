@@ -1,17 +1,19 @@
 package integ.com.yourcompany.yourproject;
 
+import static integ.com.yourcompany.yourproject.support.Interactions.click;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.openqa.selenium.support.PageFactory.initElements;
-import integ.com.yourcompany.yourproject.Pages.AccountEditPage;
-import integ.com.yourcompany.yourproject.Pages.AccountRoleTab;
-import integ.com.yourcompany.yourproject.Pages.AccountSearchPage;
-import integ.com.yourcompany.yourproject.Pages.AnonymousHomePage;
-import integ.com.yourcompany.yourproject.Pages.DocumentEditPage;
-import integ.com.yourcompany.yourproject.Pages.DocumentSearchPage;
-import integ.com.yourcompany.yourproject.Pages.DocumentTab;
-import integ.com.yourcompany.yourproject.Pages.LoggedHomePage;
-import integ.com.yourcompany.yourproject.Pages.LoginPage;
-import integ.com.yourcompany.yourproject.Pages.RoleSearchPage;
+import integ.com.yourcompany.yourproject.pages.AnonymousHomePage;
+import integ.com.yourcompany.yourproject.pages.LoggedHomePage;
+import integ.com.yourcompany.yourproject.pages.LoginPage;
+import integ.com.yourcompany.yourproject.pages.account.AccountEditPage;
+import integ.com.yourcompany.yourproject.pages.account.AccountSearchPage;
+import integ.com.yourcompany.yourproject.pages.document.DocumentEditPage;
+import integ.com.yourcompany.yourproject.pages.document.DocumentSearchPage;
+import integ.com.yourcompany.yourproject.pages.document.DocumentTab;
+import integ.com.yourcompany.yourproject.pages.role.AccountRoleTab;
+import integ.com.yourcompany.yourproject.pages.role.RoleSearchPage;
+import integ.com.yourcompany.yourproject.support.Waiter;
 
 import java.util.concurrent.TimeUnit;
 
@@ -20,13 +22,8 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedCondition;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
-import com.google.common.base.Function;
-
-public class AccountSearchPageFactoryTest {
+public class ComplexScenarioTest {
     WebDriver driver;
     LoginPage loginPage;
     AnonymousHomePage anonymousHomePage;
@@ -42,11 +39,15 @@ public class AccountSearchPageFactoryTest {
     AccountRoleTab accountRoleTab;
     RoleSearchPage roleSearchPage;
 
+    Waiter wait;
+
     @Before
     public void setup() {
         driver = new org.openqa.selenium.firefox.FirefoxDriver();
         // driver = new org.openqa.selenium.htmlunit.HtmlUnitDriver(true);
         driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+
+        wait = new Waiter(driver);
         loginPage = initElements(driver, LoginPage.class);
         anonymousHomePage = initElements(driver, AnonymousHomePage.class);
         loggedHomePage = initElements(driver, LoggedHomePage.class);
@@ -77,7 +78,7 @@ public class AccountSearchPageFactoryTest {
         driver.get("http://localhost:8080/ippevent/app/document");
         click(documentSearchPage.createNew);
         documentEditPage.input.sendKeys("/Users/florent/Downloads/pom.xml");
-        waitFor("Invalid file type");
+        wait.text("Invalid file type");
         documentEditPage.input.sendKeys("/Users/florent/Downloads/input.txt");
         click(documentEditPage.save);
     }
@@ -89,7 +90,7 @@ public class AccountSearchPageFactoryTest {
         // login as cnorris, and verify it is not valid
         click(anonymousHomePage.connexionLink);
         loginPage.login("cnorris", "kickass");
-        waitFor("Invalid login or password");
+        wait.text("Invalid login or password");
 
         // login as admin
         loginPage.login("admin", "admin");
@@ -98,41 +99,41 @@ public class AccountSearchPageFactoryTest {
 
         // search by mail and verify ajax, next/previous navigation
         accountSearchPage.searchByEmail("1");
-        waitForDifferent(accountSearchPage.searchResultsRegion, "");
-        waitFor(accountSearchPage.paginatorText, "1 / 2");
+        wait.difference(accountSearchPage.searchResultsRegion, "");
+        wait.text(accountSearchPage.paginatorText, "1 / 2");
         assertThat(accountSearchPage.searchResultsRegion.getText()).isEqualTo("13 results");
         click(accountSearchPage.paginatorNextButton);
-        waitFor(accountSearchPage.paginatorText, "2 / 2");
+        wait.text(accountSearchPage.paginatorText, "2 / 2");
         click(accountSearchPage.paginatorPrevButton);
-        waitFor(accountSearchPage.paginatorText, "1 / 2");
+        wait.text(accountSearchPage.paginatorText, "1 / 2");
 
         // search by username, select the user, and update its value
         accountSearchPage.searchByUsername(userName);
-        waitFor(userName + "@example.com");
-        accountSearchPage.clickAccount(userName);
-        waitFor("Username (required)");
+        wait.text(userName + "@example.com");
+        accountSearchPage.clickEditAccount(userName);
+        wait.text("Username (required)");
         accountEditPage.update("cnorris", "kickass", "gmail@chucknorris.com");
         click(accountEditPage.submit);
-        waitFor("Submitted data received, validated and binded, but not saved in database");
+        wait.text("Submitted data received, validated and binded, but not saved in database");
 
         // add a ROLE_ADMIN to the selected user
         click(accountEditPage.rolesTab);
         click(accountRoleTab.selectButton);
         roleSearchPage.searchByRolename("ADMIN");
-        roleSearchPage.selectRole("ROLE_ADMIN");
-        waitFor("Roles: Selected existing and added it, but not saved in database");
+        roleSearchPage.clickSelectRole("ROLE_ADMIN");
+        wait.text("Roles: Selected existing and added it, but not saved in database");
 
         // add document
         click(accountEditPage.documentsTab);
         click(documentTab.addButton);
         documentEditPage.send("README");
-        waitFor("Invalid file type.");
+        wait.text("Invalid file type.");
         documentEditPage.send("src/test/resources/for_upload.txt");
         click(documentTab.submit);
 
         // save to database
         click(accountEditPage.save);
-        waitFor("Saved OK in database");
+        wait.text("Saved OK in database");
 
         // then logout
         click(loggedHomePage.logoutLink);
@@ -148,84 +149,19 @@ public class AccountSearchPageFactoryTest {
         loginPage.login("admin", "admin");
         click(loggedHomePage.accountLink);
         accountSearchPage.searchByUsername("cnorris");
-        waitFor("gmail@chucknorris.com");
+        wait.text("gmail@chucknorris.com");
 
         // select account and revert previous changes
-        accountSearchPage.clickAccount("cnorris");
-        waitFor("Username (required)");
+        accountSearchPage.clickEditAccount("cnorris");
+        wait.text("Username (required)");
         accountEditPage.update(userName, userName, userName + "@example.com");
         click(accountEditPage.booksTab);
         click(accountEditPage.documentsTab);
         click(accountEditPage.rolesTab);
-        accountRoleTab.deleteRole("ROLE_ADMIN");
+        accountRoleTab.clickDeleteRole("ROLE_ADMIN");
         click(accountEditPage.save);
 
-        waitFor("Saved OK in database");
+        wait.text("Saved OK in database");
     }
 
-    private void waitFor(String text) {
-        waitFor(contains(text));
-    }
-
-    public static void click(WebElement webElement) {
-        webElement.click();
-        try {
-            Thread.sleep(800);
-        } catch (InterruptedException e) {
-            //
-        }
-    }
-
-    public static void clear(WebElement... webElements) {
-        for (WebElement webElement : webElements) {
-            webElement.clear();
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                //
-            }
-        }
-    }
-
-    public static void write(WebElement webElement, String text) {
-        webElement.clear();
-        webElement.sendKeys(text);
-        try {
-            Thread.sleep(200);
-        } catch (InterruptedException e) {
-            //
-        }
-    }
-
-    private void waitFor(WebElement webElement, String text) {
-        waitFor(new TextEquals(webElement, text));
-    }
-
-    private void waitForDifferent(WebElement webElement, String text) {
-        waitFor(new TextNotEquals(webElement, text));
-    }
-
-    private void waitFor(Function<WebDriver, Boolean> function) {
-        browserWait().until(function);
-    }
-
-    public static final void sleep() {
-        try {
-            Thread.sleep(200);
-        } catch (InterruptedException e) {
-            //
-        }
-    }
-
-    private WebDriverWait browserWait() {
-        return new WebDriverWait(driver, 4);
-    }
-
-    public static ExpectedCondition<Boolean> contains(final String text) {
-        return new ExpectedCondition<Boolean>() {
-            public Boolean apply(WebDriver from) {
-                return from.getPageSource().contains(text);
-            }
-        };
-    }
 }
