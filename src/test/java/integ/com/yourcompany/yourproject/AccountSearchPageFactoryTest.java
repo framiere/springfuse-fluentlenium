@@ -86,7 +86,6 @@ public class AccountSearchPageFactoryTest {
     public void as_an_admin_I_update_a_user() throws InterruptedException {
         driver.get("http://localhost:8080/ippevent/app/home?locale=en");
         String userName = "user19";
-
         // login as cnorris, and verify it is not valid
         click(anonymousHomePage.connexionLink);
         loginPage.login("cnorris", "kickass");
@@ -99,13 +98,13 @@ public class AccountSearchPageFactoryTest {
 
         // search by mail and verify ajax, next/previous navigation
         accountSearchPage.searchByEmail("1");
-        waitForDifferentText(accountSearchPage.searchResultsRegion, "");
-        waitForText(accountSearchPage.paginatorText, "1 / 2");
+        waitForDifferent(accountSearchPage.searchResultsRegion, "");
+        waitFor(accountSearchPage.paginatorText, "1 / 2");
         assertThat(accountSearchPage.searchResultsRegion.getText()).isEqualTo("13 results");
         click(accountSearchPage.paginatorNextButton);
-        waitFor("2 / 2");
+        waitFor(accountSearchPage.paginatorText, "2 / 2");
         click(accountSearchPage.paginatorPrevButton);
-        waitFor("1 / 2");
+        waitFor(accountSearchPage.paginatorText, "1 / 2");
 
         // search by username, select the user, and update its value
         accountSearchPage.searchByUsername(userName);
@@ -117,14 +116,14 @@ public class AccountSearchPageFactoryTest {
         waitFor("Submitted data received, validated and binded, but not saved in database");
 
         // add a ROLE_ADMIN to the selected user
-        click(accountEditPage.tabRoles);
+        click(accountEditPage.rolesTab);
         click(accountRoleTab.selectButton);
         roleSearchPage.searchByRolename("ADMIN");
         roleSearchPage.selectRole("ROLE_ADMIN");
         waitFor("Roles: Selected existing and added it, but not saved in database");
 
         // add document
-        click(accountEditPage.tabDocuments);
+        click(accountEditPage.documentsTab);
         click(documentTab.addButton);
         documentEditPage.send("README");
         waitFor("Invalid file type.");
@@ -155,7 +154,9 @@ public class AccountSearchPageFactoryTest {
         accountSearchPage.clickAccount("cnorris");
         waitFor("Username (required)");
         accountEditPage.update(userName, userName, userName + "@example.com");
-        click(accountEditPage.tabRoles);
+        click(accountEditPage.booksTab);
+        click(accountEditPage.documentsTab);
+        click(accountEditPage.rolesTab);
         accountRoleTab.deleteRole("ROLE_ADMIN");
         click(accountEditPage.save);
 
@@ -168,7 +169,11 @@ public class AccountSearchPageFactoryTest {
 
     public static void click(WebElement webElement) {
         webElement.click();
-        sleep();
+        try {
+            Thread.sleep(800);
+        } catch (InterruptedException e) {
+            //
+        }
     }
 
     public static void clear(WebElement... webElements) {
@@ -186,17 +191,17 @@ public class AccountSearchPageFactoryTest {
         webElement.clear();
         webElement.sendKeys(text);
         try {
-            Thread.sleep(100);
+            Thread.sleep(200);
         } catch (InterruptedException e) {
             //
         }
     }
 
-    private void waitForText(WebElement webElement, String text) {
+    private void waitFor(WebElement webElement, String text) {
         waitFor(new TextEquals(webElement, text));
     }
 
-    private void waitForDifferentText(WebElement webElement, String text) {
+    private void waitForDifferent(WebElement webElement, String text) {
         waitFor(new TextNotEquals(webElement, text));
     }
 

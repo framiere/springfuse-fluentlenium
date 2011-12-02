@@ -145,10 +145,12 @@ public class Pages {
         WebElement close;
 
         // tabs
+        @FindBy(linkText = "Books")
+        WebElement booksTab;
         @FindBy(linkText = "Roles")
-        WebElement tabRoles;
+        WebElement rolesTab;
         @FindBy(linkText = "Documents")
-        WebElement tabDocuments;
+        WebElement documentsTab;
 
         public void update(String _username, String _password, String _email) {
             write(username, _username);
