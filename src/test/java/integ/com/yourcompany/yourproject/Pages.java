@@ -1,13 +1,19 @@
 package integ.com.yourcompany.yourproject;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static integ.com.yourcompany.yourproject.AccountSearchPageFactoryTest.clear;
 import static integ.com.yourcompany.yourproject.AccountSearchPageFactoryTest.click;
+import static integ.com.yourcompany.yourproject.AccountSearchPageFactoryTest.sleep;
 import static integ.com.yourcompany.yourproject.AccountSearchPageFactoryTest.write;
 import static org.openqa.selenium.By.cssSelector;
+
+import java.io.File;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+
+import com.google.common.base.Preconditions;
 
 public class Pages {
     public static class LoginPage {
@@ -93,12 +99,6 @@ public class Pages {
 
         @FindBy(id = "form:sendNew")
         WebElement createNew;
-
-        WebDriver driver;
-
-        public DocumentSearchPage(WebDriver driver) {
-            this.driver = driver;
-        }
     }
 
     public static class RoleSearchPage {
@@ -147,6 +147,8 @@ public class Pages {
         // tabs
         @FindBy(linkText = "Roles")
         WebElement tabRoles;
+        @FindBy(linkText = "Documents")
+        WebElement tabDocuments;
 
         public void update(String _username, String _password, String _email) {
             write(username, _username);
@@ -154,22 +156,30 @@ public class Pages {
             write(email, _email);
         }
     }
-    
+
     public static class DocumentEditPage {
         // edit box
         @FindBy(id = "form:documentBinary_input")
         WebElement input;
-        @FindBy(css = "div[id=\"form:documentBinary\"] span.ui-button-text")
-        WebElement choose;
 
         // buttons
         @FindBy(id = "form:save")
         WebElement save;
+
+        public void send(String file) {
+            checkArgument(new File(file).exists(), " must exist");
+            send(new File(file));
+        }
+
+        public void send(File file) {
+            input.sendKeys(file.getAbsolutePath());
+            sleep();
+        }
     }
 
     public static class AccountRoleTab {
         @FindBy(css = "button[title=\"Search role\"]")
-        WebElement select;
+        WebElement selectButton;
 
         WebDriver driver;
 
@@ -180,5 +190,12 @@ public class Pages {
         public void deleteRole(String roleName) {
             click(driver.findElement(cssSelector("button[title=\"Delete " + roleName + "\"]")));
         }
+    }
+
+    public static class DocumentTab {
+        @FindBy(css = "button[title=\"Add document\"]")
+        WebElement addButton;
+        @FindBy(id = "form:ok")
+        WebElement submit;
     }
 }

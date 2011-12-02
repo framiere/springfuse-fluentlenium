@@ -8,18 +8,17 @@ import integ.com.yourcompany.yourproject.Pages.AccountSearchPage;
 import integ.com.yourcompany.yourproject.Pages.AnonymousHomePage;
 import integ.com.yourcompany.yourproject.Pages.DocumentEditPage;
 import integ.com.yourcompany.yourproject.Pages.DocumentSearchPage;
+import integ.com.yourcompany.yourproject.Pages.DocumentTab;
 import integ.com.yourcompany.yourproject.Pages.LoggedHomePage;
 import integ.com.yourcompany.yourproject.Pages.LoginPage;
 import integ.com.yourcompany.yourproject.Pages.RoleSearchPage;
 
-import java.io.File;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
@@ -32,10 +31,14 @@ public class AccountSearchPageFactoryTest {
     LoginPage loginPage;
     AnonymousHomePage anonymousHomePage;
     LoggedHomePage loggedHomePage;
+
     AccountSearchPage accountSearchPage;
-    DocumentSearchPage documentSearchPage;
     AccountEditPage accountEditPage;
+
+    DocumentSearchPage documentSearchPage;
     DocumentEditPage documentEditPage;
+    DocumentTab documentTab;
+
     AccountRoleTab accountRoleTab;
     RoleSearchPage roleSearchPage;
 
@@ -45,13 +48,18 @@ public class AccountSearchPageFactoryTest {
         // driver = new org.openqa.selenium.htmlunit.HtmlUnitDriver(true);
         driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
         loginPage = initElements(driver, LoginPage.class);
-        accountSearchPage = initElements(driver, AccountSearchPage.class);
-        documentSearchPage = initElements(driver, DocumentSearchPage.class);
-        documentEditPage = initElements(driver, DocumentEditPage.class);
         anonymousHomePage = initElements(driver, AnonymousHomePage.class);
         loggedHomePage = initElements(driver, LoggedHomePage.class);
+
+        accountSearchPage = initElements(driver, AccountSearchPage.class);
+
         accountEditPage = initElements(driver, AccountEditPage.class);
         accountRoleTab = initElements(driver, AccountRoleTab.class);
+
+        documentSearchPage = initElements(driver, DocumentSearchPage.class);
+        documentEditPage = initElements(driver, DocumentEditPage.class);
+        documentTab = initElements(driver, DocumentTab.class);
+
         roleSearchPage = initElements(driver, RoleSearchPage.class);
     }
 
@@ -61,6 +69,7 @@ public class AccountSearchPageFactoryTest {
     }
 
     @Test
+    @Ignore
     public void upload_file() throws InterruptedException {
         driver.get("http://localhost:8080/ippevent/app/home?locale=en");
         click(anonymousHomePage.connexionLink);
@@ -68,7 +77,7 @@ public class AccountSearchPageFactoryTest {
         driver.get("http://localhost:8080/ippevent/app/document");
         click(documentSearchPage.createNew);
         documentEditPage.input.sendKeys("/Users/florent/Downloads/pom.xml");
-        waitForText("Invalid file type");
+        waitFor("Invalid file type");
         documentEditPage.input.sendKeys("/Users/florent/Downloads/input.txt");
         click(documentEditPage.save);
     }
@@ -81,7 +90,7 @@ public class AccountSearchPageFactoryTest {
         // login as cnorris, and verify it is not valid
         click(anonymousHomePage.connexionLink);
         loginPage.login("cnorris", "kickass");
-        waitForText("Invalid login or password");
+        waitFor("Invalid login or password");
 
         // login as admin
         loginPage.login("admin", "admin");
@@ -94,29 +103,37 @@ public class AccountSearchPageFactoryTest {
         waitForText(accountSearchPage.paginatorText, "1 / 2");
         assertThat(accountSearchPage.searchResultsRegion.getText()).isEqualTo("13 results");
         click(accountSearchPage.paginatorNextButton);
-        waitForText("2 / 2");
+        waitFor("2 / 2");
         click(accountSearchPage.paginatorPrevButton);
-        waitForText("1 / 2");
+        waitFor("1 / 2");
 
         // search by username, select the user, and update its value
         accountSearchPage.searchByUsername(userName);
-        waitForText(userName + "@example.com");
+        waitFor(userName + "@example.com");
         accountSearchPage.clickAccount(userName);
-        waitForText("Username (required)");
+        waitFor("Username (required)");
         accountEditPage.update("cnorris", "kickass", "gmail@chucknorris.com");
         click(accountEditPage.submit);
-        waitForText("Submitted data received, validated and binded, but not saved in database");
+        waitFor("Submitted data received, validated and binded, but not saved in database");
 
         // add a ROLE_ADMIN to the selected user
         click(accountEditPage.tabRoles);
-        click(accountRoleTab.select);
+        click(accountRoleTab.selectButton);
         roleSearchPage.searchByRolename("ADMIN");
         roleSearchPage.selectRole("ROLE_ADMIN");
-        waitForText("Roles: Selected existing and added it, but not saved in database");
+        waitFor("Roles: Selected existing and added it, but not saved in database");
+
+        // add document
+        click(accountEditPage.tabDocuments);
+        click(documentTab.addButton);
+        documentEditPage.send("README");
+        waitFor("Invalid file type.");
+        documentEditPage.send("src/test/resources/for_upload.txt");
+        click(documentTab.submit);
 
         // save to database
         click(accountEditPage.save);
-        waitForText("Saved OK in database");
+        waitFor("Saved OK in database");
 
         // then logout
         click(loggedHomePage.logoutLink);
@@ -132,20 +149,20 @@ public class AccountSearchPageFactoryTest {
         loginPage.login("admin", "admin");
         click(loggedHomePage.accountLink);
         accountSearchPage.searchByUsername("cnorris");
-        waitForText("gmail@chucknorris.com");
+        waitFor("gmail@chucknorris.com");
 
         // select account and revert previous changes
         accountSearchPage.clickAccount("cnorris");
-        waitForText("Username (required)");
+        waitFor("Username (required)");
         accountEditPage.update(userName, userName, userName + "@example.com");
         click(accountEditPage.tabRoles);
         accountRoleTab.deleteRole("ROLE_ADMIN");
         click(accountEditPage.save);
 
-        waitForText("Saved OK in database");
+        waitFor("Saved OK in database");
     }
 
-    private void waitForText(String text) {
+    private void waitFor(String text) {
         waitFor(contains(text));
     }
 
@@ -169,7 +186,7 @@ public class AccountSearchPageFactoryTest {
         webElement.clear();
         webElement.sendKeys(text);
         try {
-            Thread.sleep(200);
+            Thread.sleep(100);
         } catch (InterruptedException e) {
             //
         }
