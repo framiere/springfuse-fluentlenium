@@ -7,6 +7,8 @@
  */
 package com.yourcompany.yourproject.dao.more;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -14,11 +16,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.apache.log4j.Logger;
-
-import static org.fest.assertions.Assertions.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,8 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.yourcompany.yourproject.domain.more.MoreTypesDemo;
 import com.yourcompany.yourproject.service.more.MoreTypesDemoGenerator;
-import com.yourcompany.yourproject.dao.more.MoreTypesDemoDao;
-import com.yourcompany.yourproject.util.*;
+import com.yourcompany.yourproject.util.ValueGenerator;
 
 /**
  * Integration test on MoreTypesDemoDaoImpl

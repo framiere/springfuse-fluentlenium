@@ -7,26 +7,13 @@
  */
 package com.yourcompany.yourproject.domain;
 
-import java.io.*;
-import java.util.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-import static org.junit.Assert.*;
 import org.junit.Test;
 
-import com.yourcompany.yourproject.util.*;
-import static org.hibernate.annotations.CacheConcurrencyStrategy.NONSTRICT_READ_WRITE;
-import java.io.Serializable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.xml.bind.annotation.XmlTransient;
-import org.apache.log4j.Logger;
-import org.hibernate.annotations.Cache;
-import org.hibernate.validator.constraints.Length;
-import org.hibernate.validator.constraints.NotEmpty;
+import com.yourcompany.yourproject.util.ValueGenerator;
 
 /**
  * Basic tests for Role

@@ -2,6 +2,8 @@ package integ.com.yourcompany.yourproject;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.openqa.selenium.support.PageFactory.initElements;
+import integ.com.yourcompancripty.yourproject.support.Client;
+import integ.com.yourcompancripty.yourproject.support.Page;
 import integ.com.yourcompany.yourproject.pages.AnonymousHomePage;
 import integ.com.yourcompany.yourproject.pages.LoggedHomePage;
 import integ.com.yourcompany.yourproject.pages.LoginPage;
@@ -12,7 +14,6 @@ import integ.com.yourcompany.yourproject.pages.document.DocumentSearchPage;
 import integ.com.yourcompany.yourproject.pages.document.DocumentTab;
 import integ.com.yourcompany.yourproject.pages.role.AccountRoleTab;
 import integ.com.yourcompany.yourproject.pages.role.RoleSearchPage;
-import integ.com.yourcompany.yourproject.support.Client;
 
 import java.util.concurrent.TimeUnit;
 
@@ -23,22 +24,33 @@ import org.junit.Test;
 import org.openqa.selenium.WebDriver;
 
 public class ComplexScenarioTest {
+
     WebDriver driver;
+    Client client;
+
+    @Page
     LoginPage loginPage;
+    @Page
     AnonymousHomePage anonymousHomePage;
+    @Page
     LoggedHomePage loggedHomePage;
 
+    @Page
     AccountSearchPage accountSearchPage;
+    @Page
     AccountEditPage accountEditPage;
 
+    @Page
     DocumentSearchPage documentSearchPage;
+    @Page
     DocumentEditPage documentEditPage;
+    @Page
     DocumentTab documentTab;
 
+    @Page
     AccountRoleTab accountRoleTab;
+    @Page
     RoleSearchPage roleSearchPage;
-
-    Client client;
 
     @Before
     public void setup() {
@@ -47,20 +59,22 @@ public class ComplexScenarioTest {
         driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 
         client = new Client(driver);
-        loginPage = initElements(driver, LoginPage.class);
-        anonymousHomePage = initElements(driver, AnonymousHomePage.class);
-        loggedHomePage = initElements(driver, LoggedHomePage.class);
-
-        accountSearchPage = initElements(driver, AccountSearchPage.class);
-
-        accountEditPage = initElements(driver, AccountEditPage.class);
-        accountRoleTab = initElements(driver, AccountRoleTab.class);
-
-        documentSearchPage = initElements(driver, DocumentSearchPage.class);
-        documentEditPage = initElements(driver, DocumentEditPage.class);
-        documentTab = initElements(driver, DocumentTab.class);
-
-        roleSearchPage = initElements(driver, RoleSearchPage.class);
+        client.initElements(this);
+        System.out.println(anonymousHomePage);
+        // loginPage = initElements(driver, LoginPage.class);
+        // anonymousHomePage = initElements(driver, AnonymousHomePage.class);
+        // loggedHomePage = initElements(driver, LoggedHomePage.class);
+        //
+        // accountSearchPage = initElements(driver, AccountSearchPage.class);
+        //
+        // accountEditPage = initElements(driver, AccountEditPage.class);
+        // accountRoleTab = initElements(driver, AccountRoleTab.class);
+        //
+        // documentSearchPage = initElements(driver, DocumentSearchPage.class);
+        // documentEditPage = initElements(driver, DocumentEditPage.class);
+        // documentTab = initElements(driver, DocumentTab.class);
+        //
+        // roleSearchPage = initElements(driver, RoleSearchPage.class);
     }
 
     @After

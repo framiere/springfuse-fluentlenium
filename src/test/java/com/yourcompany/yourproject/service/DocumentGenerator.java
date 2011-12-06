@@ -7,18 +7,12 @@
  */
 package com.yourcompany.yourproject.service;
 
-import java.util.*;
-
-import com.yourcompany.yourproject.util.*;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.yourcompany.yourproject.domain.Document;
-
 import com.yourcompany.yourproject.domain.Account;
-import com.yourcompany.yourproject.service.AccountService;
-import com.yourcompany.yourproject.service.AccountGenerator;
+import com.yourcompany.yourproject.domain.Document;
+import com.yourcompany.yourproject.util.ValueGenerator;
 
 /**
  * Helper class to create transient entities instance for testing purposes.

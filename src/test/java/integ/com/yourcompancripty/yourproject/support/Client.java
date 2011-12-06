@@ -1,9 +1,16 @@
-package integ.com.yourcompany.yourproject.support;
+package integ.com.yourcompancripty.yourproject.support;
+
+import integ.com.yourcompany.yourproject.support.TextEquals;
+import integ.com.yourcompany.yourproject.support.TextNotEquals;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -12,17 +19,24 @@ import com.google.common.base.Function;
 public class Client {
     public final WebDriver driver;
 
+    private long driverWaitBeforeStopInSeconds = 10;
+    private long waitAfterClickInMs = 800;
+    private long waitAfterClearInMs = 150;
+    private long waitAfterStepInMs = 2000;
+    private long waitAfterFillMs = 250;
+    private long waitAfterNotificationMs = 600;
+
     public Client(WebDriver driver) {
         this.driver = driver;
     }
 
     public void text(String text) {
-        message("text expected", text);
+        message("Expect : " + text);
         function(contains(text));
     }
 
     public void text(WebElement webElement, String text) {
-        message(webElement.getAttribute("id"), text);
+        message("Expect in attribute : " + text);
         function(new TextEquals(webElement, text));
     }
 
@@ -31,12 +45,11 @@ public class Client {
     }
 
     public void function(Function<WebDriver, Boolean> function) {
-        sleep(100);
         browserWait().until(function);
     }
 
     public WebDriverWait browserWait() {
-        return new WebDriverWait(driver, 4);
+        return new WebDriverWait(driver, driverWaitBeforeStopInSeconds);
     }
 
     public static ExpectedCondition<Boolean> contains(final String text) {
@@ -49,7 +62,7 @@ public class Client {
 
     public void step(String text) {
         message("------NEW STEP------", text);
-        sleep(1500);
+        sleep(waitAfterStepInMs);
     }
 
     public void message(String title, String text) {
@@ -70,14 +83,13 @@ public class Client {
 
     public void notification(String title, String text, String color) {
         ((JavascriptExecutor) driver).executeScript("" //
-                + "if ($.notifier) {\n" //
-                + "    $.notifier.broadcast({ " //
-                + "    " + (title.isEmpty() ? "" : "ttl:'" + title.replace("'", "\'") + "',") //
-                + "    msg:'" + text.replace("'", "\\'") + "'," //
-                + "    skin:'rounded" + (color.isEmpty() ? "" : "," + color).replace("'", "\\'") + "'" //
-                + "    });\n" //
-                + "};");
-        sleep(100);
+                + "showNotification({                               \n" //
+                + "    type : \"information\",                      \n" //
+                + "    message: '" + text.replace("'", "\\'") + "', \n" //
+                + "    autoclose: true,                             \n" //
+                + "    duration: 4                                  \n" //
+                + "});                                              \n");
+        sleep(waitAfterNotificationMs);
     }
 
     public void sleep(long sleepInMs) {
@@ -94,19 +106,37 @@ public class Client {
 
     public void click(WebElement webElement) {
         webElement.click();
-        sleep(800);
+        sleep(waitAfterClickInMs);
     }
 
     public void clear(WebElement... webElements) {
         for (WebElement webElement : webElements) {
             webElement.clear();
-            sleep(100);
+            sleep(waitAfterClearInMs);
         }
     }
 
-    public void write(WebElement webElement, String text) {
+    public void fill(WebElement webElement, String text) {
         webElement.clear();
         webElement.sendKeys(text);
-        sleep(200);
+        sleep(waitAfterFillMs);
+    }
+
+    public void initElements(Object object) {
+        try {
+            Class<?> cls = Class.forName(object.getClass().getName());
+            for (Field field : cls.getDeclaredFields()) {
+                if (field.isAnnotationPresent(Page.class)) {
+                    field.setAccessible(true);
+                    field.set(object, initPage(field));
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private Object initPage(Field field) throws ClassNotFoundException {
+        return PageFactory.initElements(driver,Class.forName(field.getType().getName()));
     }
 }

@@ -7,14 +7,12 @@
  */
 package com.yourcompany.yourproject.service.more;
 
-import java.util.*;
+import java.util.Date;
 
-import com.yourcompany.yourproject.util.*;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.yourcompany.yourproject.domain.more.MoreTypesDemo;
+import com.yourcompany.yourproject.util.ValueGenerator;
 
 /**
  * Helper class to create transient entities instance for testing purposes.

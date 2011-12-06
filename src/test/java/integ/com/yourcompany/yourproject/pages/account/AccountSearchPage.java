@@ -1,7 +1,7 @@
 package integ.com.yourcompany.yourproject.pages.account;
 
 import static org.openqa.selenium.By.cssSelector;
-import integ.com.yourcompany.yourproject.support.Client;
+import integ.com.yourcompancripty.yourproject.support.Client;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -30,7 +30,7 @@ public class AccountSearchPage {
     @FindBy(css = "span.ui-icon-seek-prev")
     public WebElement paginatorPrevButton;
 
-    Client client;
+    private final Client client;
 
     public AccountSearchPage(WebDriver driver) {
         client = new Client(driver);
@@ -38,7 +38,7 @@ public class AccountSearchPage {
 
     public void searchByUsername(String _username) {
         client.clear(email, password, username);
-        client.write(username, _username);
+        client.fill(username, _username);
         client.click(searchButton);
     }
 
@@ -48,7 +48,7 @@ public class AccountSearchPage {
 
     public void searchByEmail(String _email) {
         client.clear(password, username);
-        client.write(email, _email);
+        client.fill(email, _email);
         client.click(searchButton);
     }
 }

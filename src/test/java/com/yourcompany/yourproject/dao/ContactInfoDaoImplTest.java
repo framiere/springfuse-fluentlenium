@@ -7,29 +7,29 @@
  */
 package com.yourcompany.yourproject.dao;
 
+import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 
 import org.hibernate.Criteria;
-import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.Projection;
 import org.hibernate.Session;
-
-import com.yourcompany.yourproject.dao.support.NamedQueryUtil;
-import com.yourcompany.yourproject.dao.support.SearchTemplate;
-
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.fest.assertions.Assertions.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
-
-import com.yourcompany.yourproject.domain.*;
-import com.yourcompany.yourproject.util.*;
+import com.yourcompany.yourproject.dao.support.NamedQueryUtil;
+import com.yourcompany.yourproject.dao.support.SearchTemplate;
+import com.yourcompany.yourproject.domain.ContactInfo;
+import com.yourcompany.yourproject.util.MockCriteriaUtil;
+import com.yourcompany.yourproject.util.ValueGenerator;
 
 /**
  * Unit test on ContactInfoDaoImpl

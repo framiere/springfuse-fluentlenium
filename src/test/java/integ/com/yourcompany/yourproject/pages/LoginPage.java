@@ -1,6 +1,6 @@
 package integ.com.yourcompany.yourproject.pages;
 
-import integ.com.yourcompany.yourproject.support.Client;
+import integ.com.yourcompancripty.yourproject.support.Client;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -14,15 +14,15 @@ public class LoginPage {
     @FindBy(name = "submit")
     public WebElement submit;
 
-    Client client;
+    private final Client client;
 
     public LoginPage(WebDriver driver) {
         client = new Client(driver);
     }
 
     public void login(String _user, String _password) {
-        client.write(user, _user);
-        client.write(password, _password);
+        client.fill(user, _user);
+        client.fill(password, _password);
         client.click(submit);
     }
 }

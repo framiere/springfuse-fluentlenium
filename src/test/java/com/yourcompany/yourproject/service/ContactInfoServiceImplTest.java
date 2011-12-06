@@ -7,9 +7,12 @@
  */
 package com.yourcompany.yourproject.service;
 
-import static org.fest.assertions.Assertions.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,11 +21,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 
-import com.yourcompany.yourproject.domain.ContactInfo;
-import com.yourcompany.yourproject.service.ContactInfoServiceImpl;
 import com.yourcompany.yourproject.dao.ContactInfoDao;
-import com.yourcompany.yourproject.domain.enums.CivilityEnum;
 import com.yourcompany.yourproject.dao.support.SearchTemplate;
+import com.yourcompany.yourproject.domain.ContactInfo;
 
 /**
  * Unit test on ContactInfoServiceImpl

@@ -1,6 +1,6 @@
 package integ.com.yourcompany.yourproject.pages.account;
 
-import integ.com.yourcompany.yourproject.support.Client;
+import integ.com.yourcompancripty.yourproject.support.Client;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -35,15 +35,15 @@ public class AccountEditPage {
     public WebElement documentsTab;
 
 
-    Client client;
+    private final Client client;
 
     public AccountEditPage(WebDriver driver) {
         client = new Client(driver);
     }
 
     public void update(String _username, String _password, String _email) {
-        client.write(username, _username);
-        client.write(password, _password);
-        client.write(email, _email);
+        client.fill(username, _username);
+        client.fill(password, _password);
+        client.fill(email, _email);
     }
 }

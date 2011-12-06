@@ -7,19 +7,14 @@
  */
 package com.yourcompany.yourproject.service;
 
-import java.util.*;
-
-import com.yourcompany.yourproject.util.*;
+import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.yourcompany.yourproject.domain.Account;
 import com.yourcompany.yourproject.domain.ContactInfo;
 import com.yourcompany.yourproject.domain.enums.CivilityEnum;
-
-import com.yourcompany.yourproject.domain.Account;
-import com.yourcompany.yourproject.service.AccountService;
-import com.yourcompany.yourproject.service.AccountGenerator;
 
 /**
  * Helper class to create transient entities instance for testing purposes.

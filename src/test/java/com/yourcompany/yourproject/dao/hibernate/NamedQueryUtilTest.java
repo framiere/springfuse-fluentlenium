@@ -7,10 +7,9 @@
  */
 package com.yourcompany.yourproject.dao.hibernate;
 
-import java.util.*;
+import java.util.List;
 
 import org.apache.log4j.Logger;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,17 +17,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.yourcompany.yourproject.dao.support.*;
-import com.yourcompany.yourproject.util.*;
-import com.yourcompany.yourproject.context.*;
+import com.yourcompany.yourproject.dao.support.NamedQueryUtil;
+import com.yourcompany.yourproject.dao.support.SearchTemplate;
 import com.yourcompany.yourproject.domain.Account;
-import com.yourcompany.yourproject.domain.Address;
-import com.yourcompany.yourproject.domain.Book;
-import com.yourcompany.yourproject.domain.ContactInfo;
-import com.yourcompany.yourproject.domain.Document;
-import com.yourcompany.yourproject.domain.Legacy;
-import com.yourcompany.yourproject.domain.more.MoreTypesDemo;
-import com.yourcompany.yourproject.domain.Role;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath*:spring/applicationContext-test.xml" })

@@ -7,11 +7,6 @@
  */
 package com.yourcompany.yourproject.service;
 
-import java.util.*;
-
-import com.yourcompany.yourproject.util.*;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.yourcompany.yourproject.domain.Address;
