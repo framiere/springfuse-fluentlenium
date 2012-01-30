@@ -1,9 +1,5 @@
-package integ.com.yourcompancripty.yourproject.support;
+package integ.com.yourcompany.yourproject.support;
 
-import integ.com.yourcompany.yourproject.support.TextEquals;
-import integ.com.yourcompany.yourproject.support.TextNotEquals;
-
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 
 import org.openqa.selenium.By;
@@ -82,13 +78,33 @@ public class Client {
     }
 
     public void notification(String title, String text, String color) {
-        ((JavascriptExecutor) driver).executeScript("" //
+        String addHeader = "" //
+                + "{                                                                                \n" //
+                + "var headID = document.getElementsByTagName('head')[0];                           \n" //
+                + "                                                                                 \n" //
+                + "var js = document.createElement('script');                                       \n" //
+                + "js.type = 'text/javascript';                                                     \n" //
+                + "js.src = '/springdata/resources/jquery_notification/jquery_notification_v.1.js'; \n" //
+                + "headID.appendChild(js);                                                          \n" //
+                + "                                                                                 \n" //
+                + "var css  = document.createElement('link');                                       \n" //
+                + "css.type = 'text/css';                                                           \n" //
+                + "css.rel = 'stylesheet';                                                          \n" //
+                + "css.media = 'screen';                                                            \n" //
+                + "css.href = '/springdata/resources/jquery_notification/css/jquery_notification.css';    \n" //
+                + "headID.appendChild(css);                                                         \n" //
+                + "}\n";
+        System.out.println(addHeader);
+        ((JavascriptExecutor) driver).executeScript(addHeader);
+
+        String showNotification = "" //
                 + "showNotification({                               \n" //
                 + "    type : \"information\",                      \n" //
                 + "    message: '" + text.replace("'", "\\'") + "', \n" //
-                + "    autoclose: true,                             \n" //
+                + "    autoClose: true,                             \n" //
                 + "    duration: 4                                  \n" //
-                + "});                                              \n");
+                + "});                                              \n";
+        ((JavascriptExecutor) driver).executeScript(showNotification);
         sleep(waitAfterNotificationMs);
     }
 
@@ -137,6 +153,6 @@ public class Client {
     }
 
     private Object initPage(Field field) throws ClassNotFoundException {
-        return PageFactory.initElements(driver,Class.forName(field.getType().getName()));
+        return PageFactory.initElements(driver, Class.forName(field.getType().getName()));
     }
 }

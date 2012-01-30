@@ -1,4 +1,4 @@
-package integ.com.yourcompancripty.yourproject.support;
+package integ.com.yourcompany.yourproject.support;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
