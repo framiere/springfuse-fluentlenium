@@ -2,11 +2,14 @@ package integ.com.yourcompany.yourproject.pages.document;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+import integ.com.yourcompany.yourproject.support.Page;
+
 import java.io.File;
 
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
+@Page
 public class DocumentEditPage {
     // edit box
     @FindBy(id = "form:documentBinary_input")

@@ -32,18 +32,7 @@ public class MessagesHelper {
     }
 
     public Message[] getNonGlobalMessages() {
-        List<Message> res = new ArrayList<Message>();
-
-        Iterator<String> ids = FacesContext.getCurrentInstance().getClientIdsWithMessages();
-        while (ids.hasNext()) {
-            String id = ids.next();
-            Iterator<FacesMessage> msgs = FacesContext.getCurrentInstance().getMessages(id);
-            while (msgs.hasNext()) {
-                res.add(new Message(id, msgs.next()));
-            }
-        }
-
-        return res.toArray(new Message[res.size()]);
+return null;
     }
 
     public boolean hasGlobalMessages() {

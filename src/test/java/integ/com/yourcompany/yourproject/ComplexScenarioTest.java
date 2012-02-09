@@ -1,7 +1,6 @@
 package integ.com.yourcompany.yourproject;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.openqa.selenium.support.PageFactory.initElements;
 import integ.com.yourcompany.yourproject.pages.AnonymousHomePage;
 import integ.com.yourcompany.yourproject.pages.LoggedHomePage;
 import integ.com.yourcompany.yourproject.pages.LoginPage;
@@ -13,7 +12,6 @@ import integ.com.yourcompany.yourproject.pages.document.DocumentTab;
 import integ.com.yourcompany.yourproject.pages.role.AccountRoleTab;
 import integ.com.yourcompany.yourproject.pages.role.RoleSearchPage;
 import integ.com.yourcompany.yourproject.support.Client;
-import integ.com.yourcompany.yourproject.support.Page;
 
 import java.util.concurrent.TimeUnit;
 
@@ -22,42 +20,39 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 
 public class ComplexScenarioTest {
 
     WebDriver driver;
     Client client;
 
-    @Page
+    // home
     LoginPage loginPage;
-    @Page
     AnonymousHomePage anonymousHomePage;
-    @Page
     LoggedHomePage loggedHomePage;
 
-    @Page
+    // account
     AccountSearchPage accountSearchPage;
-    @Page
     AccountEditPage accountEditPage;
 
-    @Page
+    // document
     DocumentSearchPage documentSearchPage;
-    @Page
     DocumentEditPage documentEditPage;
-    @Page
     DocumentTab documentTab;
 
-    @Page
     AccountRoleTab accountRoleTab;
-    @Page
     RoleSearchPage roleSearchPage;
+
+    String context = "http://localhost:8080/springdata";
+    boolean htmlUnit = false;
 
     @Before
     public void setup() {
-        driver = new org.openqa.selenium.firefox.FirefoxDriver();
-        // driver = new org.openqa.selenium.htmlunit.HtmlUnitDriver(true);
+        driver = htmlUnit ? new HtmlUnitDriver(true) : new FirefoxDriver();
         driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-        client = new Client(driver);
+        client = new Client(driver, context);
         client.initElements(this);
     }
 
@@ -69,10 +64,10 @@ public class ComplexScenarioTest {
     @Test
     @Ignore
     public void upload_file() throws InterruptedException {
-        driver.get("http://localhost:8080/springdata/app/home?locale=en");
+        client.page("/app/home?locale=en");
         client.click(anonymousHomePage.connexionLink);
         loginPage.login("admin", "admin");
-        driver.get("http://localhost:8080/ippevent/app/document");
+        client.page("/app/document");
         client.click(documentSearchPage.createNew);
         documentEditPage.input.sendKeys("/Users/florent/Downloads/pom.xml");
         client.text("Invalid file type");
@@ -82,7 +77,7 @@ public class ComplexScenarioTest {
 
     @Test
     public void as_an_admin_I_update_a_user() throws InterruptedException {
-        driver.get("http://localhost:8080/springdata/app/home?locale=en");
+        client.page("/app/home?locale=en");
         String userName = "user19";
 
         client.step("Login as cnorris, and verify it is not valid");

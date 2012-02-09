@@ -2,11 +2,12 @@ package integ.com.yourcompany.yourproject.pages.role;
 
 import static org.openqa.selenium.By.cssSelector;
 import integ.com.yourcompany.yourproject.support.Client;
+import integ.com.yourcompany.yourproject.support.Page;
 
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
+@Page
 public class RoleSearchPage {
     // search box
     @FindBy(id = "form:roleName")
@@ -14,11 +15,7 @@ public class RoleSearchPage {
     @FindBy(name = "form:search")
     public WebElement searchButton;
 
-    private final Client client;
-
-    public RoleSearchPage(WebDriver driver) {
-        client = new Client(driver);
-    }
+    Client client;
 
     public void searchByRolename(String _roleName) {
         client.fill(roleName, _roleName);

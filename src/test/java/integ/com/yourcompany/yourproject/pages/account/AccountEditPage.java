@@ -1,11 +1,12 @@
 package integ.com.yourcompany.yourproject.pages.account;
 
 import integ.com.yourcompany.yourproject.support.Client;
+import integ.com.yourcompany.yourproject.support.Page;
 
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
+@Page
 public class AccountEditPage {
     @FindBy(id = "form:messages")
     public WebElement messages;
@@ -34,12 +35,7 @@ public class AccountEditPage {
     @FindBy(linkText = "Documents")
     public WebElement documentsTab;
 
-
-    private final Client client;
-
-    public AccountEditPage(WebDriver driver) {
-        client = new Client(driver);
-    }
+    Client client;
 
     public void update(String _username, String _password, String _email) {
         client.fill(username, _username);

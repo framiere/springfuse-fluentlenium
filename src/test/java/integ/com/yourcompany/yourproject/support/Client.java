@@ -14,16 +14,18 @@ import com.google.common.base.Function;
 
 public class Client {
     public final WebDriver driver;
+    public final String context;
 
     private long driverWaitBeforeStopInSeconds = 10;
     private long waitAfterClickInMs = 800;
     private long waitAfterClearInMs = 150;
-    private long waitAfterStepInMs = 2000;
+    private long waitAfterStepInMs = 4000;
     private long waitAfterFillMs = 250;
     private long waitAfterNotificationMs = 600;
 
-    public Client(WebDriver driver) {
+    public Client(WebDriver driver, String context) {
         this.driver = driver;
+        this.context = context;
     }
 
     public void text(String text) {
@@ -79,22 +81,22 @@ public class Client {
 
     public void notification(String title, String text, String color) {
         String addHeader = "" //
-                + "{                                                                                \n" //
+                + "if (typeof(jquery_notification_added_in_head) == 'undefined') {                \n" //
                 + "var headID = document.getElementsByTagName('head')[0];                           \n" //
                 + "                                                                                 \n" //
                 + "var js = document.createElement('script');                                       \n" //
                 + "js.type = 'text/javascript';                                                     \n" //
-                + "js.src = '/springdata/resources/jquery_notification/jquery_notification_v.1.js'; \n" //
+                + "js.src = '" + context + "/resources/jquery_notification/jquery_notification_v.1.js'; \n" //
                 + "headID.appendChild(js);                                                          \n" //
                 + "                                                                                 \n" //
                 + "var css  = document.createElement('link');                                       \n" //
                 + "css.type = 'text/css';                                                           \n" //
                 + "css.rel = 'stylesheet';                                                          \n" //
                 + "css.media = 'screen';                                                            \n" //
-                + "css.href = '/springdata/resources/jquery_notification/css/jquery_notification.css';    \n" //
+                + "css.href = '" + context + "/resources/jquery_notification/css/jquery_notification.css';\n" //
                 + "headID.appendChild(css);                                                         \n" //
-                + "}\n";
-        System.out.println(addHeader);
+                + "                                                                                 \n" //
+                + "jquery_notification_added_in_head = true;" + "}\n";
         ((JavascriptExecutor) driver).executeScript(addHeader);
 
         String showNotification = "" //
@@ -125,6 +127,11 @@ public class Client {
         sleep(waitAfterClickInMs);
     }
 
+    public void page(String relative) {
+        System.out.println(context + relative);
+        driver.get(context + relative);
+    }
+
     public void clear(WebElement... webElements) {
         for (WebElement webElement : webElements) {
             webElement.clear();
@@ -152,7 +159,22 @@ public class Client {
         }
     }
 
-    private Object initPage(Field field) throws ClassNotFoundException {
+    private Object initPage(Field field) throws Exception {
+        Object page = createPage(field);
+        setupClient(page);
+        return page;
+    }
+
+    private void setupClient(Object page) throws Exception {
+        for (Field field : page.getClass().getDeclaredFields()) {
+            if (field.getType() == Client.class && field.getName().equals("client")) {
+                field.setAccessible(true);
+                field.set(page, this);
+            }
+        }
+    }
+
+    private Object createPage(Field field) throws ClassNotFoundException {
         return PageFactory.initElements(driver, Class.forName(field.getType().getName()));
     }
 }

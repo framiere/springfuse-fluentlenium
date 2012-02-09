@@ -2,11 +2,12 @@ package integ.com.yourcompany.yourproject.pages.account;
 
 import static org.openqa.selenium.By.cssSelector;
 import integ.com.yourcompany.yourproject.support.Client;
+import integ.com.yourcompany.yourproject.support.Page;
 
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
+@Page
 public class AccountSearchPage {
     // search box
     @FindBy(id = "form:username")
@@ -30,11 +31,7 @@ public class AccountSearchPage {
     @FindBy(css = "span.ui-icon-seek-prev")
     public WebElement paginatorPrevButton;
 
-    private final Client client;
-
-    public AccountSearchPage(WebDriver driver) {
-        client = new Client(driver);
-    }
+    Client client;
 
     public void searchByUsername(String _username) {
         client.clear(email, password, username);
