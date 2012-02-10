@@ -1,6 +1,31 @@
 # Selenium 
 
-Trying to find a nice way to test application with code generation in mind.
+Trying to find a nice way to test application with code generation in mind and using the PageFactory pattern
+
+## Pages
+
+```java
+@Page
+public class LoginPage {
+    @FindBy(id = "j_username")
+    public WebElement user;
+    @FindBy(id = "j_password")
+    public WebElement password;
+    @FindBy(name = "submit")
+    public WebElement submit;
+    Client client;
+
+    public void login(String _user, String _password) {
+        client.fill(user, _user);
+        client.fill(password, _password);
+        client.click(submit);
+    }
+}
+```
+
+## Test
+
+and the tests feels like this
 
 ```java
     @Test
