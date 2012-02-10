@@ -1,19 +1,27 @@
 package integ.com.yourcompany.yourproject.support;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+
 import java.lang.reflect.Field;
+import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.htmlunit.HtmlUnitDriver;
+import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.google.common.base.Function;
+import com.google.common.base.Preconditions;
 
 public class Client {
-    public final WebDriver driver;
+    public final WebDriver webDriver;
     public final String context;
 
     private long driverWaitBeforeStopInSeconds = 10;
@@ -23,23 +31,37 @@ public class Client {
     private long waitAfterFillMs = 250;
     private long waitAfterNotificationMs = 600;
 
-    public Client(WebDriver driver, String context) {
-        this.driver = driver;
-        this.context = context;
+    public Client(ClientBuilder builder) {
+        this.webDriver = builder.webDriver;
+        this.context = builder.context;
+        initElements(builder.testInstance);
     }
 
     public void text(String text) {
-        message("Expect : " + text);
-        function(contains(text));
+        try {
+            function(contains(text));
+            success("Found [" + text + "]");
+        } catch (RuntimeException e) {
+            error("Could not find [" + text + "]");
+        }
     }
 
     public void text(WebElement webElement, String text) {
-        message("Expect in attribute : " + text);
-        function(new TextEquals(webElement, text));
+        try {
+            function(new TextEquals(webElement, text));
+            success("Found [" + text + "]");
+        } catch (RuntimeException e) {
+            error("Could not find [" + text + "]");
+        }
     }
 
     public void difference(WebElement webElement, String text) {
-        function(new TextNotEquals(webElement, text));
+        try {
+            function(new TextNotEquals(webElement, text));
+            success("Found different text than [" + text + "]");
+        } catch (RuntimeException e) {
+            error("Could not find a text different to [" + text + "]");
+        }
     }
 
     public void function(Function<WebDriver, Boolean> function) {
@@ -47,7 +69,7 @@ public class Client {
     }
 
     public WebDriverWait browserWait() {
-        return new WebDriverWait(driver, driverWaitBeforeStopInSeconds);
+        return new WebDriverWait(webDriver, driverWaitBeforeStopInSeconds);
     }
 
     public static ExpectedCondition<Boolean> contains(final String text) {
@@ -59,67 +81,71 @@ public class Client {
     }
 
     public void step(String text) {
-        message("------NEW STEP------", text);
+        message(text);
         sleep(waitAfterStepInMs);
     }
 
-    public void message(String title, String text) {
-        notification(title, text, "");
-    }
-
     public void message(String text) {
-        notification("", text, "");
-    }
-
-    public void warning(String title, String text) {
-        notification(title, text, "red");
+        notification(text, "information");
     }
 
     public void warning(String text) {
-        notification("", text, "red");
+        notification(text, "warning");
     }
 
-    public void notification(String title, String text, String color) {
+    public void error(String text) {
+        notification(text, "error");
+        sleep(12333);
+        throw new RuntimeException(text);
+    }
+
+    public void success(String text) {
+        notification(text, "succ_bg");
+    }
+
+    public void notification(String text, String type) {
+        System.out.println(text);
         String addHeader = "" //
                 + "if (typeof(jquery_notification_added_in_head) == 'undefined') {                \n" //
-                + "var headID = document.getElementsByTagName('head')[0];                           \n" //
-                + "                                                                                 \n" //
-                + "var js = document.createElement('script');                                       \n" //
-                + "js.type = 'text/javascript';                                                     \n" //
-                + "js.src = '" + context + "/resources/jquery_notification/jquery_notification_v.1.js'; \n" //
-                + "headID.appendChild(js);                                                          \n" //
-                + "                                                                                 \n" //
-                + "var css  = document.createElement('link');                                       \n" //
-                + "css.type = 'text/css';                                                           \n" //
-                + "css.rel = 'stylesheet';                                                          \n" //
-                + "css.media = 'screen';                                                            \n" //
-                + "css.href = '" + context + "/resources/jquery_notification/css/jquery_notification.css';\n" //
-                + "headID.appendChild(css);                                                         \n" //
-                + "                                                                                 \n" //
-                + "jquery_notification_added_in_head = true;" + "}\n";
-        ((JavascriptExecutor) driver).executeScript(addHeader);
+                + "   var headID = document.getElementsByTagName('head')[0];                           \n" //
+                + "                                                                                    \n" //
+                + "   var js = document.createElement('script');                                       \n" //
+                + "   js.type = 'text/javascript';                                                     \n" //
+                + "   js.src = '" + context + "/resources/jquery_notification/jquery_notification_v.1.js'; \n" //
+                + "   headID.appendChild(js);                                                          \n" //
+                + "                                                                                    \n" //
+                + "   var css  = document.createElement('link');                                       \n" //
+                + "   css.type = 'text/css';                                                           \n" //
+                + "   css.rel = 'stylesheet';                                                          \n" //
+                + "   css.media = 'screen';                                                            \n" //
+                + "   css.href = '" + context + "/resources/jquery_notification/css/jquery_notification.css';\n" //
+                + "   headID.appendChild(css);                                                         \n" //
+                + "                                                                                    \n" //
+                + "   jquery_notification_added_in_head = true;" //
+                + "}\n";
+        ((JavascriptExecutor) webDriver).executeScript(addHeader);
 
+        int durationInS = "error".equals(type) ? 100 : 6;
         String showNotification = "" //
                 + "showNotification({                               \n" //
-                + "    type : \"information\",                      \n" //
+                + "    type : \"" + type + "\",                     \n" //
                 + "    message: '" + text.replace("'", "\\'") + "', \n" //
                 + "    autoClose: true,                             \n" //
-                + "    duration: 4                                  \n" //
+                + "    duration: " + durationInS + "                \n" //
                 + "});                                              \n";
-        ((JavascriptExecutor) driver).executeScript(showNotification);
+        ((JavascriptExecutor) webDriver).executeScript(showNotification);
         sleep(waitAfterNotificationMs);
     }
 
     public void sleep(long sleepInMs) {
         try {
-            Thread.sleep(sleepInMs);
-        } catch (InterruptedException e) {
-            //
+            MILLISECONDS.sleep(sleepInMs);
+        } catch (InterruptedException ignore) {
         }
     }
 
     public void click(By by) {
-        click(driver.findElement(by));
+        click(webDriver.findElement(by));
     }
 
     public void click(WebElement webElement) {
@@ -129,7 +155,7 @@ public class Client {
 
     public void page(String relative) {
         System.out.println(context + relative);
-        driver.get(context + relative);
+        webDriver.get(context + relative);
     }
 
     public void clear(WebElement... webElements) {
@@ -149,7 +175,7 @@ public class Client {
         try {
             Class<?> cls = Class.forName(object.getClass().getName());
             for (Field field : cls.getDeclaredFields()) {
-                if (field.isAnnotationPresent(Page.class)) {
+                if (field.getType().isAnnotationPresent(Page.class)) {
                     field.setAccessible(true);
                     field.set(object, initPage(field));
                 }
@@ -167,7 +193,7 @@ public class Client {
 
     private void setupClient(Object page) throws Exception {
         for (Field field : page.getClass().getDeclaredFields()) {
-            if (field.getType() == Client.class && field.getName().equals("client")) {
+            if (field.getType() == Client.class) {
                 field.setAccessible(true);
                 field.set(page, this);
             }
@@ -175,6 +201,66 @@ public class Client {
     }
 
     private Object createPage(Field field) throws ClassNotFoundException {
-        return PageFactory.initElements(driver, Class.forName(field.getType().getName()));
+        return PageFactory.initElements(webDriver, Class.forName(field.getType().getName()));
+    }
+
+    public void close() {
+        webDriver.close();
+    }
+
+    public static class ClientBuilder {
+        WebDriver webDriver;
+        boolean useHtmlUnit = false;
+        int waitTimeInSeconds = 10;
+        Object testInstance;
+        String context;
+
+        public static ClientBuilder newClient() {
+            return new ClientBuilder();
+        }
+
+        public ClientBuilder useHtmlUnit(boolean useHtmlUnit) {
+            this.useHtmlUnit = useHtmlUnit;
+            return this;
+        }
+
+        public ClientBuilder waitTimeInSeconds(int waitTimeInSeconds) {
+            this.waitTimeInSeconds = waitTimeInSeconds;
+            return this;
+        }
+
+        public ClientBuilder context(String context) {
+            this.context = context;
+            return this;
+        }
+
+        public ClientBuilder onTest(Object testInstance) {
+            this.testInstance = testInstance;
+            return this;
+        }
+
+        public Client build() {
+            Preconditions.checkNotNull(context);
+            Preconditions.checkNotNull(testInstance);
+            Preconditions.checkNotNull(webDriver);
+            return new Client(this);
+        }
+
+        public ClientBuilder webDriver(String driver) {
+            if ("htmlunit".equalsIgnoreCase(driver)) {
+                this.webDriver = new HtmlUnitDriver(true);
+            } else if ("firefox".equalsIgnoreCase(driver)) {
+                this.webDriver = new FirefoxDriver();
+            } else if ("ie".equalsIgnoreCase(driver)) {
+                this.webDriver = new InternetExplorerDriver();
+            } else if ("chrome".equalsIgnoreCase(driver)) {
+                this.webDriver = new ChromeDriver();
+            } else {
+                throw new IllegalArgumentException(driver + " is not a valid web driver");
+            }
+            webDriver.manage().timeouts().implicitlyWait(waitTimeInSeconds, TimeUnit.SECONDS);
+            return this;
+        }
+
     }
 }

@@ -1,5 +1,6 @@
 package integ.com.yourcompany.yourproject;
 
+import static integ.com.yourcompany.yourproject.support.Client.ClientBuilder.newClient;
 import static org.fest.assertions.Assertions.assertThat;
 import integ.com.yourcompany.yourproject.pages.AnonymousHomePage;
 import integ.com.yourcompany.yourproject.pages.LoggedHomePage;
@@ -13,19 +14,11 @@ import integ.com.yourcompany.yourproject.pages.role.AccountRoleTab;
 import integ.com.yourcompany.yourproject.pages.role.RoleSearchPage;
 import integ.com.yourcompany.yourproject.support.Client;
 
-import java.util.concurrent.TimeUnit;
-
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 
 public class ComplexScenarioTest {
-
-    WebDriver driver;
     Client client;
 
     // home
@@ -46,33 +39,23 @@ public class ComplexScenarioTest {
     RoleSearchPage roleSearchPage;
 
     String context = "http://localhost:8080/springdata";
-    boolean htmlUnit = false;
+    boolean useHtmlUnit = false;
+    int waitTimeInSeconds = 10;
 
     @Before
     public void setup() {
-        driver = htmlUnit ? new HtmlUnitDriver(true) : new FirefoxDriver();
-        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-        client = new Client(driver, context);
-        client.initElements(this);
+        client = newClient() //
+                .context(context) //
+                .useHtmlUnit(useHtmlUnit) //
+                .webDriver("htmlunit") //
+                .waitTimeInSeconds(waitTimeInSeconds) //
+                .onTest(this) //
+                .build();
     }
 
     @After
     public void tearDown() {
-        driver.close();
-    }
-
-    @Test
-    @Ignore
-    public void upload_file() throws InterruptedException {
-        client.page("/app/home?locale=en");
-        client.click(anonymousHomePage.connexionLink);
-        loginPage.login("admin", "admin");
-        client.page("/app/document");
-        client.click(documentSearchPage.createNew);
-        documentEditPage.input.sendKeys("/Users/florent/Downloads/pom.xml");
-        client.text("Invalid file type");
-        documentEditPage.input.sendKeys("/Users/florent/Downloads/input.txt");
-        client.click(documentEditPage.save);
+        client.close();
     }
 
     @Test
@@ -107,7 +90,7 @@ public class ComplexScenarioTest {
         client.text("Username (required)");
         accountEditPage.update("cnorris", "kickass", "gmail@chucknorris.com");
         client.click(accountEditPage.submit);
-        client.text("Submitted data received, validated and binded, but not saved in database");
+        client.text("Submitted data received, validation skipped, binded on model, not saved in database");
 
         client.step("Add a ROLE_ADMIN to the selected user");
         client.click(accountEditPage.rolesTab);

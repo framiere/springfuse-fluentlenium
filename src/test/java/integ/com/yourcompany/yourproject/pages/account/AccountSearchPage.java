@@ -39,13 +39,13 @@ public class AccountSearchPage {
         client.click(searchButton);
     }
 
-    public void clickEditAccount(String userName) {
-        client.click(cssSelector("button[title=\"Edit " + userName + "\"]"));
-    }
-
     public void searchByEmail(String _email) {
         client.clear(password, username);
         client.fill(email, _email);
         client.click(searchButton);
+    }
+
+    public void clickEditAccount(String userName) {
+        client.click(cssSelector("button[title=\"Edit " + userName + "\"]"));
     }
 }
