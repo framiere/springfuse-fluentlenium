@@ -12,6 +12,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -24,7 +25,7 @@ public class AccountSearchDirectTest {
     @Before
     public void setup() {
         // driver = new org.openqa.selenium.htmlunit.HtmlUnitDriver(true);
-        driver = new org.openqa.selenium.firefox.FirefoxDriver();
+        driver = new FirefoxDriver();
     }
 
     @After
