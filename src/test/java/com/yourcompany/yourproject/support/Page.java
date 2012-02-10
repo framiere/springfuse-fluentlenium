@@ -1,4 +1,4 @@
-package integ.com.yourcompany.yourproject.support;
+package com.yourcompany.yourproject.support;
 
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;

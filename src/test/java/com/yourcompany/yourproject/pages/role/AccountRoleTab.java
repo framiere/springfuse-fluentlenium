@@ -1,11 +1,12 @@
-package integ.com.yourcompany.yourproject.pages.role;
+package com.yourcompany.yourproject.pages.role;
 
 import static org.openqa.selenium.By.cssSelector;
-import integ.com.yourcompany.yourproject.support.Client;
-import integ.com.yourcompany.yourproject.support.Page;
 
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+
+import com.yourcompany.yourproject.support.Client;
+import com.yourcompany.yourproject.support.Page;
 
 @Page
 public class AccountRoleTab {

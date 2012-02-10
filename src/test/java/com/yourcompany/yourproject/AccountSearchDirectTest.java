@@ -1,4 +1,4 @@
-package integ.com.yourcompany.yourproject;
+package com.yourcompany.yourproject;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.openqa.selenium.By.cssSelector;

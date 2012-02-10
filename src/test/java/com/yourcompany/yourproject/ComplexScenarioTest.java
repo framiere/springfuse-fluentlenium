@@ -1,22 +1,23 @@
-package integ.com.yourcompany.yourproject;
+package com.yourcompany.yourproject;
 
-import static integ.com.yourcompany.yourproject.support.Client.ClientBuilder.newClient;
+import static com.yourcompany.yourproject.support.Client.ClientBuilder.newClient;
 import static org.fest.assertions.Assertions.assertThat;
-import integ.com.yourcompany.yourproject.pages.AnonymousHomePage;
-import integ.com.yourcompany.yourproject.pages.LoggedHomePage;
-import integ.com.yourcompany.yourproject.pages.LoginPage;
-import integ.com.yourcompany.yourproject.pages.account.AccountEditPage;
-import integ.com.yourcompany.yourproject.pages.account.AccountSearchPage;
-import integ.com.yourcompany.yourproject.pages.document.DocumentEditPage;
-import integ.com.yourcompany.yourproject.pages.document.DocumentSearchPage;
-import integ.com.yourcompany.yourproject.pages.document.DocumentTab;
-import integ.com.yourcompany.yourproject.pages.role.AccountRoleTab;
-import integ.com.yourcompany.yourproject.pages.role.RoleSearchPage;
-import integ.com.yourcompany.yourproject.support.Client;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.yourcompany.yourproject.pages.AnonymousHomePage;
+import com.yourcompany.yourproject.pages.LoggedHomePage;
+import com.yourcompany.yourproject.pages.LoginPage;
+import com.yourcompany.yourproject.pages.account.AccountEditPage;
+import com.yourcompany.yourproject.pages.account.AccountSearchPage;
+import com.yourcompany.yourproject.pages.document.DocumentEditPage;
+import com.yourcompany.yourproject.pages.document.DocumentSearchPage;
+import com.yourcompany.yourproject.pages.document.DocumentTab;
+import com.yourcompany.yourproject.pages.role.AccountRoleTab;
+import com.yourcompany.yourproject.pages.role.RoleSearchPage;
+import com.yourcompany.yourproject.support.Client;
 
 public class ComplexScenarioTest {
     Client client;
