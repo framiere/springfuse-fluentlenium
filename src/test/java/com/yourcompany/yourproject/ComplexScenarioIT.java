@@ -19,7 +19,7 @@ import com.yourcompany.yourproject.pages.role.AccountRoleTab;
 import com.yourcompany.yourproject.pages.role.RoleSearchPage;
 import com.yourcompany.yourproject.support.Client;
 
-public class ComplexScenarioTest {
+public class ComplexScenarioIT {
     Client client;
 
     // home
@@ -39,17 +39,21 @@ public class ComplexScenarioTest {
     AccountRoleTab accountRoleTab;
     RoleSearchPage roleSearchPage;
 
-    String context = "http://localhost:8080/springdata";
-    boolean useHtmlUnit = false;
-    int waitTimeInSeconds = 10;
+    String applicationHostname = System.getProperty("application.hostname", "localhost");
+    String applicationPort = System.getProperty("application.port", "8080");
+    String applicationContext = System.getProperty("application.context", "/springdata");
+    String baseUrl = "http://" + applicationHostname + ":" + applicationPort + (applicationContext.startsWith("/") ? "" : "/") + applicationContext;;
+    String webDriver = System.getProperty("selenium.webdriver", "firefox");
+    int waitTimeInSeconds = Integer.parseInt(System.getProperty("selenium.waitTimeInSeconds", "10"));
+    boolean followVisually = Boolean.parseBoolean(System.getProperty("selenium.follow.visually", "true"));
 
     @Before
     public void setup() {
         client = newClient() //
-                .context(context) //
-                .useHtmlUnit(useHtmlUnit) //
-                .webDriver("htmlunit") //
+                .baseUrl(baseUrl) //
+                .webDriver(webDriver) //
                 .waitTimeInSeconds(waitTimeInSeconds) //
+                .followVisually(followVisually) //
                 .onTest(this) //
                 .build();
     }
@@ -103,10 +107,10 @@ public class ComplexScenarioTest {
         client.step("Add a document");
         client.click(accountEditPage.documentsTab);
         client.click(documentTab.addButton);
-        documentEditPage.send("README");
+        documentEditPage.send("./src/test/resources/no_extension");
         client.warning("Error is expected");
         client.text("Invalid file type.");
-        documentEditPage.send("src/test/resources/for_upload.txt");
+        documentEditPage.send("./src/test/resources/for_upload.txt");
         client.click(documentTab.submit);
 
         client.step("Save to database");

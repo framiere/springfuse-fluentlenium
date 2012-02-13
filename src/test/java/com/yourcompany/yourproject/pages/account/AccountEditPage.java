@@ -36,7 +36,7 @@ public class AccountEditPage {
     @FindBy(linkText = "Documents")
     public WebElement documentsTab;
 
-    Client client;
+    private Client client;
 
     public void update(String _username, String _password, String _email) {
         client.fill(username, _username);

@@ -32,7 +32,7 @@ public class AccountSearchPage {
     @FindBy(css = "span.ui-icon-seek-prev")
     public WebElement paginatorPrevButton;
 
-    Client client;
+    private Client client;
 
     public void searchByUsername(String _username) {
         client.clear(email, password, username);

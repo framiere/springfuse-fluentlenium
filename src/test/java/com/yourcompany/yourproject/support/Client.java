@@ -22,7 +22,7 @@ import com.google.common.base.Preconditions;
 
 public class Client {
     public final WebDriver webDriver;
-    public final String context;
+    public final String baseUrl;
 
     private long driverWaitBeforeStopInSeconds = 10;
     private long waitAfterClickInMs = 800;
@@ -30,10 +30,13 @@ public class Client {
     private long waitAfterStepInMs = 4000;
     private long waitAfterFillMs = 250;
     private long waitAfterNotificationMs = 600;
+    private boolean followVisually;
 
     public Client(ClientBuilder builder) {
         this.webDriver = builder.webDriver;
-        this.context = builder.context;
+        this.baseUrl = builder.baseUrl;
+        this.followVisually = builder.followVisually;
+        this.driverWaitBeforeStopInSeconds = builder.waitTimeInSeconds;
         initElements(builder.testInstance);
     }
 
@@ -81,8 +84,10 @@ public class Client {
     }
 
     public void step(String text) {
-        message(text);
-        sleep(waitAfterStepInMs);
+        if (followVisually) {
+            message(text);
+            sleep(waitAfterStepInMs);
+        }
     }
 
     public void message(String text) {
@@ -94,8 +99,10 @@ public class Client {
     }
 
     public void error(String text) {
-        notification(text, "error");
-        sleep(12333);
+        if (followVisually) {
+            notification(text, "error");
+            sleep(60);
+        }
         throw new RuntimeException(text);
     }
 
@@ -104,21 +111,23 @@ public class Client {
     }
 
     public void notification(String text, String type) {
-        System.out.println(text);
+        if (!followVisually) {
+            return;
+        }
         String addHeader = "" //
                 + "if (typeof(jquery_notification_added_in_head) == 'undefined') {                \n" //
                 + "   var headID = document.getElementsByTagName('head')[0];                           \n" //
                 + "                                                                                    \n" //
                 + "   var js = document.createElement('script');                                       \n" //
                 + "   js.type = 'text/javascript';                                                     \n" //
-                + "   js.src = '" + context + "/resources/jquery_notification/jquery_notification_v.1.js'; \n" //
+                + "   js.src = '" + baseUrl + "/resources/jquery_notification/jquery_notification_v.1.js'; \n" //
                 + "   headID.appendChild(js);                                                          \n" //
                 + "                                                                                    \n" //
                 + "   var css  = document.createElement('link');                                       \n" //
                 + "   css.type = 'text/css';                                                           \n" //
                 + "   css.rel = 'stylesheet';                                                          \n" //
                 + "   css.media = 'screen';                                                            \n" //
-                + "   css.href = '" + context + "/resources/jquery_notification/css/jquery_notification.css';\n" //
+                + "   css.href = '" + baseUrl + "/resources/jquery_notification/css/jquery_notification.css';\n" //
                 + "   headID.appendChild(css);                                                         \n" //
                 + "                                                                                    \n" //
                 + "   jquery_notification_added_in_head = true;" //
@@ -154,8 +163,8 @@ public class Client {
     }
 
     public void page(String relative) {
-        System.out.println(context + relative);
-        webDriver.get(context + relative);
+        System.out.println(baseUrl + relative);
+        webDriver.get(baseUrl + relative);
     }
 
     public void clear(WebElement... webElements) {
@@ -210,18 +219,13 @@ public class Client {
 
     public static class ClientBuilder {
         WebDriver webDriver;
-        boolean useHtmlUnit = false;
         int waitTimeInSeconds = 10;
         Object testInstance;
-        String context;
+        String baseUrl;
+        boolean followVisually = true;
 
         public static ClientBuilder newClient() {
             return new ClientBuilder();
-        }
-
-        public ClientBuilder useHtmlUnit(boolean useHtmlUnit) {
-            this.useHtmlUnit = useHtmlUnit;
-            return this;
         }
 
         public ClientBuilder waitTimeInSeconds(int waitTimeInSeconds) {
@@ -229,8 +233,8 @@ public class Client {
             return this;
         }
 
-        public ClientBuilder context(String context) {
-            this.context = context;
+        public ClientBuilder baseUrl(String baseUrl) {
+            this.baseUrl = baseUrl;
             return this;
         }
 
@@ -239,11 +243,9 @@ public class Client {
             return this;
         }
 
-        public Client build() {
-            Preconditions.checkNotNull(context);
-            Preconditions.checkNotNull(testInstance);
-            Preconditions.checkNotNull(webDriver);
-            return new Client(this);
+        public ClientBuilder followVisually(boolean followVisually) {
+            this.followVisually = followVisually;
+            return this;
         }
 
         public ClientBuilder webDriver(String driver) {
@@ -262,5 +264,11 @@ public class Client {
             return this;
         }
 
+        public Client build() {
+            Preconditions.checkNotNull(baseUrl);
+            Preconditions.checkNotNull(testInstance);
+            Preconditions.checkNotNull(webDriver);
+            return new Client(this);
+        }
     }
 }
