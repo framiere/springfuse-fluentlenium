@@ -1,10 +1,8 @@
 package com.yourcompany.yourproject;
 
-import static com.yourcompany.yourproject.support.Client.ClientBuilder.newClient;
 import static org.fest.assertions.Assertions.assertThat;
 
-import org.junit.After;
-import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
 import com.yourcompany.yourproject.pages.AnonymousHomePage;
@@ -20,7 +18,8 @@ import com.yourcompany.yourproject.pages.role.RoleSearchPage;
 import com.yourcompany.yourproject.support.Client;
 
 public class ComplexScenarioIT {
-    Client client;
+    @Rule
+    public ClientRule clientRule = new ClientRule(this);
 
     // home
     LoginPage loginPage;
@@ -39,32 +38,9 @@ public class ComplexScenarioIT {
     AccountRoleTab accountRoleTab;
     RoleSearchPage roleSearchPage;
 
-    String applicationHostname = System.getProperty("application.hostname", "localhost");
-    String applicationPort = System.getProperty("application.port", "8080");
-    String applicationContext = System.getProperty("application.context", "/springdata");
-    String baseUrl = "http://" + applicationHostname + ":" + applicationPort + (applicationContext.startsWith("/") ? "" : "/") + applicationContext;;
-    String webDriver = System.getProperty("selenium.webdriver", "firefox");
-    int waitTimeInSeconds = Integer.parseInt(System.getProperty("selenium.waitTimeInSeconds", "10"));
-    boolean followVisually = Boolean.parseBoolean(System.getProperty("selenium.follow.visually", "true"));
-
-    @Before
-    public void setup() {
-        client = newClient() //
-                .baseUrl(baseUrl) //
-                .webDriver(webDriver) //
-                .waitTimeInSeconds(waitTimeInSeconds) //
-                .followVisually(followVisually) //
-                .onTest(this) //
-                .build();
-    }
-
-    @After
-    public void tearDown() {
-        client.close();
-    }
-
     @Test
     public void as_an_admin_I_update_a_user() throws InterruptedException {
+        Client client = clientRule.getClient();
         client.page("/app/home?locale=en");
         String userName = "user19";
 
